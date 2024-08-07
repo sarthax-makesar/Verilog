@@ -1,1 +1,57 @@
+We wish to have a synchronous design; therefore a system clock ‘clk_out’ is used. 
+The controller design has reset (active low) and hold pins as in a microprocessor based design. 
+In addition to these signals, we have an enable pin, ‘endram’, for the external RAM. 
+We also have a chip enable (ce_n), a write enable (wr_n), and a read enable (oe_n), all of which are active low signals. 
+There is also a signal ‘rwn’ to configure the external RAM in write mode or in read mode. 
+An address bus of 16 bits is pro- vided so that we may access an external RAM of size 64 KB whether we write or read, one location at a time or a block of locations as a burst. 
+A low at the pin ‘rwn’ sets the RAM in write mode, while a high sets it in read mode.
 
+Verilog Code description :
+Verilog_code presents the RTL code for External RAM Controller used in Video Scalar application. 
+First, we define the maximum address, ‘drpixaddr’, in the external RAM and then declare the module name and list all the inputs/outputs that we saw in the block diagram earlier. 
+This is followed by the declaration of all the I/Os. All the signals used in the design are declared as ‘wire’ or ‘reg’ as the case may be. 
+Also, we need the read address (drraddr) and write address (drwaddr) separately for the controller although externally one ‘addr’ bus is adequate. 
+A high on ‘rwn’ implies that the ‘addr’ is the read address. Otherwise, it is ‘drwaddr’.
+The first assign statement ‘res_addr’ resets the address bus, ‘addr’ when maxi- mum address is encountered. 
+Using external RAM, we will not be able to achieve higher speed than the on-chip RAM. We need to scale it down by a factor of two as explained later. 
+For example, if we have a system clock of 100 MHz, we can access the external RAM only at 50 MHz rate. 
+In order to do this, we have count- ers separately for write (wr_cnt) as well as read (rd_cnt).
+These counters are enabled by signals ‘enwr_cnt’ and ‘enrd_cnt’ respectively. 
+The write/read counters are only toggling flip-flops. 
+They are actually configured as counters so that by increasing their widths, slower external RAM may be used according to the application requirement. 
+The first sequential always block realizes the ‘rwn’ signal. 
+This signal is initialized at the start and can be held if a ‘hold’ signal is asserted. When all the RAM locations are accessed in a burst, ‘rwn’ signal is toggled so that the RAM may be configured to read mode from write mode, for instance. 
+The 1 bit counter ‘wr_cnt’ is changed every falling edge of ‘clk_out’ signal. 
+The write pulse ‘wr_n’ for RAM is generated only if the write counter is enabled, i.e., enwr_cnt = 1. Otherwise, the write pulse is disabled.
+The RAM write address ‘drwaddr’ is advanced, if enabled by the signal ‘en- waddr’. 
+It is reset when the terminal count is reached, indicated by the setting of the signal ‘res_waddr’. 
+The read counter, ‘rd_cnt’, function is similar to that of the write counter, ‘wr_cnt’, described earlier. 
+Similarly, the RAM read address (drraddr) signal function is very much akin to the write address ‘drwaddr’. 
+Read signal for RAM, ‘oe_n’ is generated at the negative edge of ‘clk_out’ only if enrd_cnt = 1. 
+Write address, drwaddr, is output as ‘addr’ if rwn = 0. 
+Otherwise, the read address, drraddr, is output using ‘assign’ statement. 
+The external RAM is selected by activating the chip enable signal, ce_n (active low), if the address is within range. 
+Otherwise, it is disabled. This is shown as the last ‘assign’ statement. 
+The write/read addresses and their counters may also be combined into a single address and a counter. 
+The code can be easily modified for accessing dual or multiple external RAMs.
+
+Testbench description :
+Now, we will look into the coding of the test bench for the external RAM controller. 
+we will have a 100 MHz clock operation, and so we define the clock period by two as 5 ns. 
+We have included the design file, ‘extmem.v’ in its back annotated form. 
+The test bench simulates the external RAM of size 64 K × 24 bits. 
+Data width is 24 bits in order to accommodate three color (RGB) pixel information required for video scalar application. 
+We have 65,536 locations in the RAM, and each location takes two-clock cycles for either a read or a write operation. 
+The test is conceived as a Go–No Go test, that is, whether the test has passed or failed since a large number of locations are involved in the test.
+The design is called by addressing ports by name. 
+The test inputs are applied in the ‘initial’ block. 
+After the specified time, the test bench will automatically stop processing. 
+The signal ‘rwn’ is 0 for the write mode. Otherwise, it is in read mode. 
+Initially, we write the same data in all the locations. 
+Thereafter, change the ‘rwn’ signal and start reading in order to check whether the data is in tact. 
+While check- ing the contents of memory locations, it may so happen that some of the data are corrupted. 
+These are indicated by setting an error flag. 
+If no error is encountered during the test, we display the message ‘External RAM Test PASS’. 
+On the other hand, if any error is encountered, we display a failure message. 
+If error is encountered in any location except the last, the error flag is set. 
+The ‘data’ read from the external RAM is obtained by the last ‘assign’ statement.
