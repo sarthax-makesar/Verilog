@@ -1,1 +1,13 @@
-
+The RTL code of dual RAM design is presented in Verilog. 
+Two RAMs, ram1 and ram2, comprise the dual RAM. 
+The control input signal, rnw, configures the two RAMs in write only mode and read only mode alternately.
+For instance, a ‘high’ configures ram1 in write mode and ram2 in read mode and vice versa.
+Once configured, the RAM in write mode gets all the eight locations writ- ten. 
+Each location is of size 64 bits. The data is written row-wise. While reading a ROM, it is done column-wise. 
+This arises owing to the order of computation of DCT mentioned earlier. 
+The include statement identifies the single RAM design.
+This is followed by the declaration of the dualram module and the listing of I/Os along with their identification.
+The ‘wire’ and ‘reg’ signals are also identified. The dual RAMs, ram1 and ram2, are instantiated by invoking the ‘ram_rc’ module twice. 
+The ‘switch_bank’ signal, which is the inverted signal of ‘rnw’, configures ram2 in read mode if rnw is high and in write mode if it is low.
+Naturally, rnw configures ram1 in write mode for rnw = 1 and in read mode for rnw = 0. The RAM data output ‘do2 or ‘do1’ is registered after a clock cycle delay at the posi- tive edge of ‘clk_sys’. 
+This delay is purposely introduced to keep pace with ‘romc’ design discussed in an earlier section.
