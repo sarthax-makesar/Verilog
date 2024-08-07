@@ -11,3 +11,17 @@ The ‘wire’ and ‘reg’ signals are also identified. The dual RAMs, ram1 an
 The ‘switch_bank’ signal, which is the inverted signal of ‘rnw’, configures ram2 in read mode if rnw is high and in write mode if it is low.
 Naturally, rnw configures ram1 in write mode for rnw = 1 and in read mode for rnw = 0. The RAM data output ‘do2 or ‘do1’ is registered after a clock cycle delay at the posi- tive edge of ‘clk_sys’. 
 This delay is purposely introduced to keep pace with ‘romc’ design discussed in an earlier section.
+
+Test Bench for the Dual RAM Design :
+The following is the description for test bench to verify the functionality of the dual RAM. 
+We include the back annotated file and examine only the output ‘do’. 
+We will operate at 50 MHz. We have two clock signals: one is the ‘pci_clk’ for writing image data into the RAM and the other one is the system clock, ‘clk’, for reading the data from RAM. 
+Implement two define statements give the half period for the two clocks. 
+All the inputs are declared as registers and the dual RAM design is instantiated, calling ports by name. 
+The signal ‘rnw’ decides whether a RAM is in read mode or in write mode. The stimulants are applied in the ‘initial’ block. 
+To start with, various signals are initialized at zero time.
+The first block of data is written into RAM 1, 64 bits at a time corresponding to one row of a block of image. 
+Each row of data is applied with different ‘wa’ and is written every 20 ns since the frequency of operation is 50 MHz. 
+The data for the write address ‘wa = 1’ is applied at 17 ns in order to avoid changing data at the rising edge of ‘pci_clk’. 
+Thereafter, the signal ‘rnw’ is toggled and the above process of writing is repeated for RAM 2. 
+Simultaneously, RAM 1 which was written earlier is read
