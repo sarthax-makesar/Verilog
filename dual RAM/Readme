@@ -24,4 +24,9 @@ The first block of data is written into RAM 1, 64 bits at a time corresponding t
 Each row of data is applied with different ‘wa’ and is written every 20 ns since the frequency of operation is 50 MHz. 
 The data for the write address ‘wa = 1’ is applied at 17 ns in order to avoid changing data at the rising edge of ‘pci_clk’. 
 Thereafter, the signal ‘rnw’ is toggled and the above process of writing is repeated for RAM 2. 
-Simultaneously, RAM 1 which was written earlier is read
+Simultaneously, RAM 1 which was written earlier is readback by applying progressively increasing read addresses ‘ra’ every 20 ns.
+Simi- larly, two more blocks are written followed by reading it back to verify whether the dual RAMs are working properly. 
+While reading the fourth block, no further block is written. 
+The last two ‘always’ blocks are used to run the two clocks in the design. 
+The test may be repeated for ‘din_valid = 0’ and ‘be [7] = 1’ and so on up to ‘be [0] = 1’. 
+For these conditions, the concerned RAM must be inhibited from writing.
