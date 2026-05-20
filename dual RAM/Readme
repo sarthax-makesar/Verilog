@@ -1,9 +1,9 @@
 The RTL code of dual RAM design is presented in Verilog. 
 Two RAMs, ram1 and ram2, comprise the dual RAM. 
-The control input signal, rnw, configures the two RAMs in write only mode and read only mode alternately.
+The control input signal, rnw, configures the two RAMs in write-only mode and read-only mode alternately.
 For instance, a ‘high’ configures ram1 in write mode and ram2 in read mode and vice versa.
-Once configured, the RAM in write mode gets all the eight locations writ- ten. 
-Each location is of size 64 bits. The data is written row-wise. While reading a ROM, it is done column-wise. 
+Once configured, the RAM in write mode gets all eight locations written. 
+Each location is of size 64 bits. The data is written row-wise. While reading, it is done column-wise. 
 This arises owing to the order of computation of DCT mentioned earlier. 
 The include statement identifies the single RAM design.
 This is followed by the declaration of the dualram module and the listing of I/Os along with their identification.
@@ -25,7 +25,7 @@ Each row of data is applied with different ‘wa’ and is written every 20 ns s
 The data for the write address ‘wa = 1’ is applied at 17 ns in order to avoid changing data at the rising edge of ‘pci_clk’. 
 Thereafter, the signal ‘rnw’ is toggled and the above process of writing is repeated for RAM 2. 
 Simultaneously, RAM 1 which was written earlier is readback by applying progressively increasing read addresses ‘ra’ every 20 ns.
-Simi- larly, two more blocks are written followed by reading it back to verify whether the dual RAMs are working properly. 
+Similarly, two more blocks are written followed by reading it back to verify whether the dual RAMs are working properly. 
 While reading the fourth block, no further block is written. 
 The last two ‘always’ blocks are used to run the two clocks in the design. 
 The test may be repeated for ‘din_valid = 0’ and ‘be [7] = 1’ and so on up to ‘be [0] = 1’. 
